@@ -31,17 +31,16 @@ LLM-from-Scratch/
 └── requirements.txt
 ```
 
-## Goal
+##  🎯 Goal
 
-The main goal of this repository is to understand **how LLMs work internally** by building one step by step instead of only using existing libraries.
+The main goal of this repository is to understand how LLMs work internally by building one step by step instead of relying solely on existing high-level libraries.
 
-This is mainly a **learning and experimentation project**, so the code may change as I learn new concepts.
+This is primarily a learning and experimentation project, so the structure and code will evolve as new concepts are implemented and explored.
 
-## Reference
+## 📚 References
 
-📖 *Build a Large Language Model (From Scratch)*
-**Sebastian Raschka**
+Raschka, S. (2024). Build a Large Language Model (From Scratch). Manning Publications.
 
----
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A. N., Kaiser, Ł., & Polosukhin, I. (2017). Attention is all you need. Advances in Neural Information Processing Systems, 30.
 
-> Learning by building, one step at a time.
+“Learning by building, one step at a time.”
