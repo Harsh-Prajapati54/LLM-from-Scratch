@@ -19,7 +19,7 @@ raw_text = """
         """
         
 vocab_size = 50257
-output_dim = 256
+output_dim = 728
 max_len = 1024
 context_length = max_len
 
