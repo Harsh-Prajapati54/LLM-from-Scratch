@@ -13,6 +13,7 @@ class GPTDataset(Dataset):
             target_seq = token_ids[i+1:i+max_length+1]
             self.input_ids.append(torch.tensor(input_seq))
             self.target_ids.append(torch.tensor(target_seq))
+            
     def __len__(self):
             return len(self.input_ids)
         
@@ -25,11 +26,14 @@ class GPTDataset(Dataset):
                          drop_last = True,
                          shuffle = True,
                          num_workers = 0):
-    tokenizer = tiktoken.get_encoding("gpt2")  # Initializes the  tokenizer
-    dataset = GPTDataset(data, tokenizer, max_length, stride)    # Creates dataset
-    dataloader = DataLoader(dataset, 
+            
+        tokenizer = tiktoken.get_encoding("gpt2")  # Initializes the  tokenizer
+        dataset = GPTDataset(data, tokenizer, max_length, stride)    # Creates dataset
+        dataloader = DataLoader(dataset, 
                             batch_size=batch_size, 
                             shuffle=shuffle,
                             drop_last=drop_last,   # Drops the last batch if it is smaller than the specified batch size to prevent loss spike
                             num_workers=num_workers)
-    return dataloader
+        return dataloader
+
+if  == 
