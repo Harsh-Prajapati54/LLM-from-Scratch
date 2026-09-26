@@ -1,5 +1,6 @@
-import tiktoken
 import statistics
+
+import tiktoken
 from datasets import load_from_disk
 
 tokenizer = tiktoken.get_encoding("gpt2")
