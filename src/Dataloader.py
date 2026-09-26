@@ -51,7 +51,7 @@ class GPTDataset(Dataset):
 def train_dataloader(data,
                          batch_size = 32,
                          max_length =256,
-                         stride = 128,
+                         stride = 256,
                          drop_last = True,
                          shuffle = True,
                          num_workers = 0):
