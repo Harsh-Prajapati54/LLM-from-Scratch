@@ -1,8 +1,11 @@
-import torch
-import torch.nn as nn
 import tiktoken
-from torch.utils.data import Dataset, DataLoader
+import torch
+from torch import nn
+from torch.utils.data import DataLoader, Dataset
 
+from dataset import load_dataset
+
+train_data, val_data = load_dataset()
 raw_text = """
         Build a Large Language Model (From Scratch) was written to help you understand and
         create your own GPT-like large language models (LLMs) from the ground up. It
@@ -19,9 +22,11 @@ raw_text = """
         """
         
 vocab_size = 50257
-output_dim = 728
-max_len = 1024
-context_length = max_len
+output_dim = 512 
+max_len = 512
+context_length = max_len # Context length (context window) is how many tokens the model can "see" at once when predicting the next token.
+
+torch.manual_seed(20)
 
 class GPTDataset(Dataset):
         """
@@ -76,7 +81,7 @@ def train_dataloader(data,
 
 if __name__ == "__main__":
     tokenizer = tiktoken.get_encoding("gpt2")
-    encoded_text = tokenizer.encode(raw_text)
+    encoded_text = tokenizer.encode(train_data)
  
     token_embedding_layer = nn.Embedding(vocab_size, output_dim)
     pos_embedding_layer = nn.Embedding(context_length, output_dim)
@@ -90,7 +95,9 @@ if __name__ == "__main__":
         token_embeds = token_embedding_layer(batch_inputs)
         pos_embeds = pos_embedding_layer(torch.arange(max_length))
         input_embeddings = token_embeds + pos_embeds
- 
+        
+        print(len(encoded_text))
         print("Input shape:", batch_inputs.shape)
         print("Embedding shape:", input_embeddings.shape)
+        # print("first embedding",input_embeddings[0][0])
         break
