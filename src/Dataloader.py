@@ -48,7 +48,7 @@ class GPTDataset(Dataset):
         
         
 
-def train_dataloader(data,
+def dataloader(data,
                          batch_size = 32,
                          max_length =256,
                          stride = 256,
@@ -74,7 +74,7 @@ if __name__ == "__main__":
     pos_embedding_layer = nn.Embedding(context_length, output_dim)
  
     max_length = 512
-    dataloader = train_dataloader(
+    dataloader = dataloader(
         train_data, batch_size=32, max_length=max_length, stride=max_length
     )
  
