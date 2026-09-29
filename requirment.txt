@@ -1,3 +1,29 @@
-Dataset
-# tokenizer
+# LLM From Scratch - Requirements
+
+# Deep Learning
+torch
+
+# Tokenization
 tiktoken
+
+# Hugging Face datasets and model storage
+datasets
+huggingface_hub
+
+# Data / numerical computing
+numpy
+pandas
+
+# Training progress and system monitoring
+tqdm
+psutil
+
+# Visualization
+matplotlib
+
+# Jupyter / Colab / VS Code notebooks
+jupyter
+ipykernel
+
+# Optional: experiment tracking
+mlflow

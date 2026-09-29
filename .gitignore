@@ -1,10 +1,16 @@
-.env  
-Data  
-__pycache__
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
+.env
+# Trained models
 *.pth
 *.pt
 *.ckpt
-mlruns/
 
 # Model outputs
 output/
+
+Data
