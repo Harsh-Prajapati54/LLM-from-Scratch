@@ -1,3 +1,10 @@
 .env  
 Data  
 __pycache__
+*.pth
+*.pt
+*.ckpt
+mlruns/
+
+# Model outputs
+output/
