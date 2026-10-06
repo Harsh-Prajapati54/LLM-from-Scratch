@@ -12,6 +12,7 @@ class Attention_Mechanism(nn.Module):
         self.num_heads = num_heads
         self.head_dim = d_out // num_heads
         self.dropout = dropout
+        self.context_length = context_length
         
         self.W_query = nn.Linear(d_in,d_out,bias = qkv_bias)
         self.W_key   = nn.Linear(d_in,d_out,bias = qkv_bias)
@@ -27,7 +28,7 @@ class Attention_Mechanism(nn.Module):
     def forward(self,x):
         
         b, T, _ = x.shape
-        
+        assert T <= self.context_length, f"Sequence length {T} exceeds context_length {self.context_length}"
         # 1. Make q, k, v and split them into heads
         
         q = self.split_head(self.W_query(x))  # (batch, heads, tokens, head_dim)
