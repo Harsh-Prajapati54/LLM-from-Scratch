@@ -81,6 +81,41 @@ class TransformerBlock(nn.Module):
         
         return x
     
+class Gptmodel(nn.Module):
+    """GPT model with a stack of transformer blocks.
+
+    Args:
+        config: configuration dictionary containing model hyperparameters.
+    """
+    def __init__(self, config):
+        super().__init__()
+        self.token_embedding = nn.Embedding(config["vocab_size"], config["emb_dim"])
+        self.position_embedding = nn.Embedding(config["context_length"], config["emb_dim"])
+        self.dropout = nn.Dropout(config["drop_rate"])
+        self.blocks = nn.Sequential(*[
+            TransformerBlock(
+                emb_dim=config["emb_dim"],
+                num_heads=config["num_heads"],
+                context_length=config["context_length"],
+                dropout=config["drop_rate"],
+                qkv_bias=config["qkv_bias"]
+            ) for _ in range(config["num_layer"])
+        ])
+        self.ln_f = LayerNormalization(config["emb_dim"])
+        self.head = nn.Linear(config["emb_dim"], config["vocab_size"], bias=False)
+        
+    def forward(self, x):
+        b, t = x.size()
+        token_embeds = self.token_embedding(x)  # (batch, tokens, emb_dim)
+        pos_embeds = self.position_embedding(torch.arange(t, device=x.device))  # (tokens, emb_dim)
+        x = token_embeds + pos_embeds  # (batch, tokens, emb_dim)
+        x = self.dropout(x)
+
+        x = self.blocks(x)  # (batch, tokens, emb_dim)
+        x = self.ln_f(x)  # (batch, tokens, emb_dim)
+        logits = self.head(x)  # (batch, tokens, vocab_size)
+        
+        return logits
     
 if __name__ == "__main__":
     import torch
