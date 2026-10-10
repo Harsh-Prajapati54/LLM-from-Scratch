@@ -168,3 +168,4 @@ if __name__ == "__main__":
     # 7. Parameter count
     n_params = sum(p.numel() for p in block.parameters())
     print(f"Block parameters: {n_params:,}")
+    # new commiit 
