@@ -1,6 +1,10 @@
 # it contains an utility functions for the model
-import torch
+import model
+from model_config import *
+from model import *
 
+import torch
+import tiktoken
 
 def generate_text(model,idx,max_new_tokens,context_size):
     """Generate text from a language model using greedy decoding.
@@ -38,3 +42,22 @@ def generate_text(model,idx,max_new_tokens,context_size):
         idx = torch.cat((idx, next_token), dim=1)
         
     return idx
+
+
+def text_to_token_ids(text,tokenizer):
+    encoded = tokenizer.encode(text,allowed_special={'<|endoftext|'})
+    encoded_tensor  = torch.tensor(encoded).unsqueeze(0)
+    return encoded_tensor
+
+def token_ids_to_text(token_ids,tokenizer):
+    flat = token_ids.squeeze(0)
+    return tokenizer.decode(flat.tolist())
+
+start_context = "every effort moves you"
+tokenizer = tiktoken.get_encoding("gpt2")
+token_ids = generate_text(
+ model=model,
+ idx=text_to_token_ids(start_context, tokenizer),
+ max_new_tokens=10,
+ context_size=  Gpt_config["context_length"]
+)
