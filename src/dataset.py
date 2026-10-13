@@ -15,7 +15,6 @@ def load_dataset():
 
     dataset_text_train = "".join(dataset["train"]['text'][:200000])
     dataset_text_val = "".join(dataset["validation"]['text'][:21990]) 
-  
     train_data = dataset_text_train
     val_data= dataset_text_val
     
