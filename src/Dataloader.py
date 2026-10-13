@@ -1,4 +1,4 @@
-from model_config import gpt_config
+from model_config import Gpt_config
 import tiktoken
 import torch
 from torch import nn
@@ -66,16 +66,16 @@ def dataloader(data,
 
 train_loader = dataloader(train_data,
                         batch_size=32,
-                        max_length=gpt_config["context_length"],
-                        stride=gpt_config["context_length"],
+                        max_length=Gpt_config["context_length"],
+                        stride=Gpt_config["context_length"],
                         shuffle=True,
                         drop_last=True,
                         num_workers= num_workers)
 
 val_loader = dataloader(val_data,
                         batch_size=32,
-                        max_length=gpt_config["context_length"],
-                        stride=gpt_config["context_length"],
+                        max_length=Gpt_config["context_length"],
+                        stride=Gpt_config["context_length"],
                         shuffle=False,
                         drop_last=False,
                         num_workers= num_workers)

@@ -1,7 +1,6 @@
 import torch.nn.functional as F
 from torch import nn
 
-from Dataloader import *
 # implementing attention mechanismin this script
 
 class Attention_Mechanism(nn.Module):
@@ -46,3 +45,30 @@ class Attention_Mechanism(nn.Module):
         context = context.transpose(1, 2).reshape(b, T, self.d_out)  # (batch, tokens, d_out)
         
         return self.out_proj(context)  # (batch, tokens, d_out)
+    
+
+if __name__ == "__main__":
+    import torch
+    from model_config import Gpt_config as c
+
+    torch.manual_seed(20)
+    attn = Attention_Mechanism(c["emb_dim"], c["emb_dim"], c["context_length"],
+                               c["drop_rate"], c["num_heads"], c["qkv_bias"]).eval()
+
+    # 1. shape: output must match input
+    x = torch.randn(2, c["context_length"], c["emb_dim"])  # (batch, tokens, emb)
+    out = attn(x)
+    print("input :", tuple(x.shape), "\noutput:", tuple(out.shape))
+    assert out.shape == x.shape
+
+    # 2. causal: changing the LAST token must not change any earlier output
+    x2 = x.clone()
+    x2[:, -1] += 1.0
+    assert torch.allclose(out[:, :-1], attn(x2)[:, :-1], atol=1e-5), "future token leaked into the past"
+    print("causal check passed")
+
+    # 3. gradients: every weight must receive a gradient
+    attn.train()
+    attn(x).sum().backward()
+    assert all(p.grad is not None for p in attn.parameters()), "a weight got no gradient"
+    print("gradient check passed")
