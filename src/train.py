@@ -1,7 +1,7 @@
 # training script for the model
 import torch
 
-import model
+from model import Gptmodel
 from utils import calc_loss_batch, calc_loss_loader, generate_and_print_sample
 
 

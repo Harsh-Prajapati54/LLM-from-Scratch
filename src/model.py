@@ -118,7 +118,7 @@ class Gptmodel(nn.Module):
         return logits
     
     
-    model = Gptmodel(Gpt_config)
+model = Gptmodel(Gpt_config)
     
 if __name__ == "__main__":
     import torch

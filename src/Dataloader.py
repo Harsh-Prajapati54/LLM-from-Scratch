@@ -1,18 +1,18 @@
+from model_config import gpt_config
 import tiktoken
 import torch
 from torch import nn
 from torch.utils.data import DataLoader, Dataset
-
+import os
 from dataset import load_dataset
 
 train_data, val_data = load_dataset()
 
-        
 vocab_size = 50257
 output_dim = 512 
 max_len = 512
 context_length = max_len # Context length (context window) is how many tokens the model can "see" at once when predicting the next token.
-
+num_workers = os.cpu_count()  # Number of CPU cores for parallel data loading
 torch.manual_seed(20)
 
 class GPTDataset(Dataset):
@@ -28,7 +28,6 @@ class GPTDataset(Dataset):
         The target is shifted by one token because the model
         learns to predict the next token.
         """
-    
         def __init__(self,data,tokonizer,max_length,stride):
                 self.input_ids = []
                 self.target_ids = []
@@ -39,55 +38,69 @@ class GPTDataset(Dataset):
                         target_seq = token_ids[i+1:i+max_length+1]
                         self.input_ids.append(torch.tensor(input_seq))
                         self.target_ids.append(torch.tensor(target_seq))
-            
         def __len__(self):
-            return len(self.input_ids)
+                return len(self.input_ids)
         
         def __getitem__(self, idx):
-            return self.input_ids[idx], self.target_ids[idx]
+                return self.input_ids[idx], self.target_ids[idx]
         
         
 
 def dataloader(data,
-                         batch_size = 32,
-                         max_length =256,
-                         stride = 256,
-                         drop_last = True,
-                         shuffle = True,
-                         num_workers = 0):
-               
+                        batch_size = 16,
+                        max_length =256,
+                        stride = 256,
+                        drop_last = True,
+                        shuffle = True,
+                        num_workers = 0):
+
         tokenizer = tiktoken.get_encoding("gpt2")  # Initializes the  tokenizer
         dataset = GPTDataset(data, tokenizer, max_length, stride)    # Creates dataset
         
         dataloader = DataLoader(dataset, 
-                            batch_size=batch_size, 
-                            shuffle=shuffle,
-                            drop_last=drop_last,   # Drops the last batch if it is smaller than the specified batch size to prevent loss spike
-                            num_workers=num_workers)
+                        batch_size=batch_size, 
+                        shuffle=shuffle,
+                        drop_last=drop_last,   # Drops the last batch if it is smaller than the specified batch size to prevent loss spike
+                        num_workers=num_workers)
         return dataloader
 
+train_loader = dataloader(train_data,
+                        batch_size=32,
+                        max_length=gpt_config["context_length"],
+                        stride=gpt_config["context_length"],
+                        shuffle=True,
+                        drop_last=True,
+                        num_workers= num_workers)
+
+val_loader = dataloader(val_data,
+                        batch_size=32,
+                        max_length=gpt_config["context_length"],
+                        stride=gpt_config["context_length"],
+                        shuffle=False,
+                        drop_last=False,
+                        num_workers= num_workers)
+
 if __name__ == "__main__":
-    tokenizer = tiktoken.get_encoding("gpt2")
-    encoded_text = tokenizer.encode(train_data)
- 
-    token_embedding_layer = nn.Embedding(vocab_size, output_dim)
-    pos_embedding_layer = nn.Embedding(context_length, output_dim)
- 
-    max_length = 512
-    dataloader = dataloader(
+        tokenizer = tiktoken.get_encoding("gpt2")
+        encoded_text = tokenizer.encode(train_data)
+
+        token_embedding_layer = nn.Embedding(vocab_size, output_dim)
+        pos_embedding_layer = nn.Embedding(context_length, output_dim)
+
+        max_length = 256
+        dataloader = dataloader(
         train_data, batch_size=32, max_length=max_length, stride=max_length
-    )
- 
-    for batch_inputs, batch_targets in dataloader:
-        token_embeds = token_embedding_layer(batch_inputs)
-        pos_embeds = pos_embedding_layer(torch.arange(max_length))
-        input_embeddings = token_embeds + pos_embeds
+        )
+        for batch_inputs, batch_targets in dataloader:
+                token_embeds = token_embedding_layer(batch_inputs)
+                pos_embeds = pos_embedding_layer(torch.arange(max_length))
+                input_embeddings = token_embeds + pos_embeds
         
-        print(len(encoded_text))
-        print("Input shape:", batch_inputs.shape)
-        print("Embedding shape:", input_embeddings.shape)
-        # print("first embedding",input_embeddings[0][0])
-        # print("total embeddings :", len(input_embeddings))
-        print("Number of batches:", len(dataloader))
-        print("Approx total examples:", len(dataloader) * dataloader.batch_size)
-        break
+                print(len(encoded_text))
+                print("Input shape:", batch_inputs.shape)
+                print("Embedding shape:", input_embeddings.shape)
+                print("first embedding",input_embeddings[0][0])
+                print("total embeddings :", len(input_embeddings))
+                print("Number of batches:", len(dataloader))
+                print("Approx total examples:", len(dataloader) * dataloader.batch_size)
+                break
