@@ -13,8 +13,8 @@ def load_dataset():
     # Prepare training and validation text
     # ============================================================
 
-    dataset_text_train = "".join(dataset["train"]['text'][:2000])
-    dataset_text_val = "".join(dataset["validation"]['text'][:219]) 
+    dataset_text_train = "".join(dataset["train"]['text'][:20000])
+    dataset_text_val = "".join(dataset["validation"]['text'][:2190]) 
     train_data = dataset_text_train
     val_data= dataset_text_val
     

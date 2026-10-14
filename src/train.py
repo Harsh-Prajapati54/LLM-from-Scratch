@@ -1,5 +1,5 @@
 # training script for the model
-from time import time
+import time
 
 import tiktoken
 import torch
@@ -14,9 +14,7 @@ optimizer = torch.optim.AdamW(model.parameters(),
                             lr=1e-4,
                             weight_decay=0.1)
 
-steps_per_epoch = len(train_loader)
-total_steps = num_epochs * steps_per_epoch
-n_params = sum(p.numel() for p in model.parameters())
+
 
 class Trainer:
     def evaluate_model(model, train_loader, val_loader, device, eval_iter):
@@ -34,7 +32,12 @@ class Trainer:
     
 
         
-    def train_model(model,train_loader,val_loader,optimizer,device,num_epochs,eval_freq,eval_iter,start_context,tokenizer):
+    def train_model(model,train_loader,val_loader,optimizer,device,num_epochs,eval_freq ,eval_iter,start_context,tokenizer):
+        
+        steps_per_epoch = len(train_loader)
+        total_steps = num_epochs * steps_per_epoch
+        n_params = sum(p.numel() for p in model.parameters())
+        
         train_losses, val_losses, track_tokens_seen = [], [], []
         tokens_seen, global_step = 0, -1
         
@@ -49,23 +52,36 @@ class Trainer:
         print(f"  Evaluate every  : {eval_freq} steps (using {eval_iter} batches)")
         print(f"  Learning rate   : {optimizer.param_groups[0]['lr']}")
         print("=" * 60)
+        
         start_time = time.time()
         
         for epoch in range(num_epochs):
             model.train()
             epoch_start = time.time()
 
-            for input_batch, target_batch in train_loader:
+            for batch_idx, (input_batch, target_batch) in enumerate(train_loader,start=1):
+                print(
+                        f"Starting Epoch {epoch + 1}/{num_epochs} | "
+                        f"Batch {batch_idx}/{steps_per_epoch}",
+                        flush=True
+                        )
+                
                 optimizer.zero_grad()
                 loss = calc_loss_batch(input_batch, target_batch, model, device)
 
                 loss.backward()
                 optimizer.step()
+                print(
+                        f"Epoch {epoch + 1}/{num_epochs} | "
+                        f"Batch {batch_idx}/{steps_per_epoch} | "
+                        f"Loss: {loss.item():.4f}",
+                        flush=True
+                        )
 
                 tokens_seen += input_batch.numel()
                 global_step += 1
 
-                if global_step % eval_freq == 0:
+                if (global_step + 1) % eval_freq == 0:
                     train_loss, val_loss = Trainer.evaluate_model(
                         model,
                         train_loader,
@@ -84,7 +100,8 @@ class Trainer:
                         f"Val loss {val_loss:.3f} | "
                         f"step {global_step + 1}/{total_steps}, "
                         f"{tokens_seen:,} tokens, "
-                        f"{time.time() - start_time:.0f}s elapsed"
+                        f"{time.time() - start_time:.0f}s elapsed",
+                        flush=True
                     )
                     
             print(f"Epoch {epoch+1}/{num_epochs} finished in {time.time() - epoch_start:.1f}s "
@@ -118,8 +135,8 @@ if __name__ == "__main__":
     model.to(device)
 
     num_epochs = 5
-    eval_freq = 1000
-    eval_iter = 10
+    eval_freq = 5
+    eval_iter = 2
     start_context = "Once upon a time"
     
     tokenizer = tiktoken.get_encoding("gpt2")
@@ -129,6 +146,6 @@ if __name__ == "__main__":
                                                                     val_loader,
                                                                     optimizer,
                                                                     device,
-                                                                    num_epochs = num_epochs,eval_freq = 1000,
-                                                                    eval_iter = 5,
+                                                                    num_epochs = num_epochs,eval_freq = eval_freq,
+                                                                    eval_iter = eval_iter,
                                                                     start_context = start_context,tokenizer=tokenizer)
