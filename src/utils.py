@@ -2,7 +2,7 @@
 import model
 from model_config import *
 from model import *
-from src.train import *
+
 import torch
 import tiktoken
 
@@ -32,9 +32,9 @@ def generate_text(model,idx,max_new_tokens,context_size):
         same output.
     """
     for _ in range(max_new_tokens):
-        idx_cond = idx[:-context_size:]
+        idx_cond = idx[:,-context_size:]
         with torch.no_grad():
-            logits = model(idx_cond.unsqueeze(0))
+            logits = model(idx_cond)
             
         logits = logits[:, -1, :]
         probs = torch.softmax(logits, dim=-1)
@@ -88,15 +88,16 @@ def generate_and_print_sample(model, tokenizer, device, start_context):
     print(decoded_text.replace("\n", " "))
     model.train()
     
-    def calc_loss_batch(input_batch,target_batch,model,device):
+    
+def calc_loss_batch(input_batch,target_batch,model,device):
         input_batch = input_batch.to(device)
-        target_batch = target_batch.to(torch.device)
+        target_batch = target_batch.to(device)
         logits = model(input_batch)
         loss = torch.nn.functional.cross_entropy(logits.flatten(0,1),target_batch.flatten())
     
         return loss 
 
-    def calc_loss_loader(data_loader, model, device, num_batches=None):
+def calc_loss_loader(data_loader, model, device, num_batches=None):
         total_loss = 0.
         if len(data_loader) == 0:
             return float("nan")

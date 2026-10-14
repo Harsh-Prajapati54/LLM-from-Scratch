@@ -1,7 +1,7 @@
 # this file contains the utility functions for the model, including the attention mechanism and the feedforward network
 import torch.nn.functional as F
 from torch import nn
-
+import torch
 from attention_mech import *
 from model_config import *
 
