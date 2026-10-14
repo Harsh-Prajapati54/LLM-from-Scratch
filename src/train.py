@@ -1,8 +1,15 @@
 # training script for the model
 import torch
-
-from model import Gptmodel
+from Dataloader import train_loader, val_loader
+from model import model
+from model import *
 from utils import calc_loss_batch, calc_loss_loader, generate_and_print_sample
+
+
+# Optimizer and training parameters
+optimizer = torch.optim.AdamW(model.parameters(),
+                            lr=1e-4,
+                            weight_decay=0.1)
 
 
 class Trainer:
@@ -62,3 +69,23 @@ class Trainer:
                 start_context
             )
         return train_losses, val_losses, track_tokens_seen
+
+
+
+if __name__ == "__main__":
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+
+    num_epochs = 5
+    eval_freq = 1000
+    eval_iter = 10
+    start_context = "Once upon a time"
+    
+    train_losses, val_losses, track_tokens_seen = Trainer.train_model(model,
+                                                                    train_loader,
+                                                                    val_loader,
+                                                                    optimizer,
+                                                                    device,
+                                                                    num_epochs = num_epochs,eval_freq = 5,
+                                                                    eval_iter = 5,
+                                                                    start_context = start_context,tokenizer=tokenizer)
