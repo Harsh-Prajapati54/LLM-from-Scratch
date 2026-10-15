@@ -60,23 +60,12 @@ class Trainer:
             epoch_start = time.time()
 
             for batch_idx, (input_batch, target_batch) in enumerate(train_loader,start=1):
-                print(
-                        f"Starting Epoch {epoch + 1}/{num_epochs} | "
-                        f"Batch {batch_idx}/{steps_per_epoch}",
-                        flush=True
-                        )
                 
                 optimizer.zero_grad()
                 loss = calc_loss_batch(input_batch, target_batch, model, device)
 
                 loss.backward()
                 optimizer.step()
-                print(
-                        f"Epoch {epoch + 1}/{num_epochs} | "
-                        f"Batch {batch_idx}/{steps_per_epoch} | "
-                        f"Loss: {loss.item():.4f}",
-                        flush=True
-                        )
 
                 tokens_seen += input_batch.numel()
                 global_step += 1

@@ -47,7 +47,7 @@ class GPTDataset(Dataset):
         
 
 def dataloader(data,
-                        batch_size = 16,
+                        batch_size = Gpt_config["batch_size"],
                         max_length =256,
                         stride = 256,
                         drop_last = True,
@@ -65,7 +65,7 @@ def dataloader(data,
         return dataloader
 
 train_loader = dataloader(train_data,
-                        batch_size=32,
+                        batch_size=Gpt_config["batch_size"],
                         max_length=Gpt_config["context_length"],
                         stride=Gpt_config["context_length"],
                         shuffle=True,
@@ -73,7 +73,7 @@ train_loader = dataloader(train_data,
                         num_workers= num_workers)
 
 val_loader = dataloader(val_data,
-                        batch_size=32,
+                        batch_size=Gpt_config["batch_size"],
                         max_length=Gpt_config["context_length"],
                         stride=Gpt_config["context_length"],
                         shuffle=False,
