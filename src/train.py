@@ -1,6 +1,4 @@
 # training script for the model
-import time
-
 import tiktoken
 import torch
 from Dataloader import train_loader, val_loader
@@ -16,7 +14,7 @@ optimizer = torch.optim.AdamW(model.parameters(),
 
 
 
-class Trainer:
+class Evaluate:
     def evaluate_model(model, train_loader, val_loader, device, eval_iter):
         model.eval()
         with torch.no_grad():
@@ -30,8 +28,8 @@ class Trainer:
 
         return train_loss, val_loss
     
-
-        
+# applying learning rate scheduler
+class Trainer:
     def train_model(model,train_loader,val_loader,optimizer,device,num_epochs,eval_freq ,eval_iter,start_context,tokenizer):
         
         
@@ -54,7 +52,7 @@ class Trainer:
                 global_step += 1
 
                 if global_step  % eval_freq == 0:
-                    train_loss, val_loss = evaluate_model(
+                    train_loss, val_loss = Evaluate.evaluate_model(
                         model,
                         train_loader,
                         val_loader,
