@@ -28,7 +28,7 @@ class Evaluate:
 
         return train_loss, val_loss
     
-# applying learning rate scheduler
+
 class Trainer:
     def train_model(model,train_loader,val_loader,optimizer,device,num_epochs,eval_freq ,eval_iter,start_context,tokenizer):
         
@@ -104,5 +104,3 @@ if __name__ == "__main__":
                                                                     num_epochs = num_epochs,eval_freq = eval_freq,
                                                                     eval_iter = eval_iter,
                                                                     start_context = start_context,tokenizer=tokenizer)
-    # Committ 
-    # fake commit
