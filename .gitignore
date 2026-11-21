@@ -15,3 +15,16 @@ output/
 
 Data
 src.zip
+
+# MLflow experiment tracking
+mlruns/
+
+# Archive folder (old/unused files)
+archive/
+
+# Jupyter checkpoints
+.ipynb_checkpoints/
+
+# OS junk
+.DS_Store
+Thumbs.db
